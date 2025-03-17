@@ -115,6 +115,11 @@ class App:
             self.add_category("Dev Tools", os_name, ["NetLimiter", "Notepad++", "PuTTY", "PowerToys", "Process Explorer", "Autoruns"], self.scrollable_frame)
             self.add_category("Social", os_name, ["TeamSpeak"], self.scrollable_frame)
             self.add_category("BAT Files", os_name, ["Restart Audio Service", "Kill Valorant Process"], self.scrollable_frame)
+            self.add_category("Overclocking", os_name, [
+                "TestMem5", "ZenTimings", "Cinebench R20", "CPU-Z", "HWiNFO", "HWMonitor x64",
+                "NVIDIA Profile Inspector", "OCCT", "Prime95", "Timer Resolution", "Timing Configurator v4.0.4",
+                "Display Driver Uninstaller (DDU)"
+            ], self.scrollable_frame)
         else:
             self.add_category("Development", os_name, ["VSCode", "PyCharm", "Git"], self.scrollable_frame)
             self.add_category("Browsers", os_name, ["Brave Browser", "LibreWolf"], self.scrollable_frame)
@@ -132,7 +137,7 @@ class App:
 
             # Load app logo
             try:
-                app_logo = Image.open(f"icons/{app.lower()}.ico")  # Replace with your app logo path
+                app_logo = Image.open(f"icons/{app.lower().replace(' ', '_')}.ico")  # Replace with your app logo path
                 app_logo = app_logo.resize((32, 32), 0)
                 app_logo_photo = ImageTk.PhotoImage(app_logo)
             except Exception as e:
@@ -236,6 +241,42 @@ class App:
             },
             "Kill Valorant Process": {
                 "Windows": "kill_valorant.bat"
+            },
+            "TestMem5": {
+                "Windows": "https://testmem5.com/download/TestMem5.zip"
+            },
+            "ZenTimings": {
+                "Windows": "https://zentimings.pro/download/ZenTimings.zip"
+            },
+            "Cinebench R20": {
+                "Windows": "https://cinebench.com/download/CinebenchR20.zip"
+            },
+            "CPU-Z": {
+                "Windows": "https://cpuid.com/downloads/cpu-z/cpu-z_2.00-en.exe"
+            },
+            "HWiNFO": {
+                "Windows": "https://www.hwinfo.com/download/hwi_716.exe"
+            },
+            "HWMonitor x64": {
+                "Windows": "https://www.cpuid.com/downloads/hwmonitor/hwmonitor_1.45.exe"
+            },
+            "NVIDIA Profile Inspector": {
+                "Windows": "https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/2.4.0.3/nvidiaProfileInspector.zip"
+            },
+            "OCCT": {
+                "Windows": "https://www.ocbase.com/download/OCCT.zip"
+            },
+            "Prime95": {
+                "Windows": "https://www.mersenne.org/download/prime95.zip"
+            },
+            "Timer Resolution": {
+                "Windows": "https://timerresolution.com/download/TimerResolution.zip"
+            },
+            "Timing Configurator v4.0.4": {
+                "Windows": "https://timingconfigurator.com/download/TimingConfigurator_v4.0.4.zip"
+            },
+            "Display Driver Uninstaller (DDU)": {
+                "Windows": "https://www.wagnardsoft.com/download/DDU_v18.1.0.0.exe"
             }
         }
 
