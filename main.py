@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, Frame, Canvas, Scrollbar
 from PIL import Image, ImageTk
+import webbrowser
+import requests
 import os
 
 class App:
@@ -119,9 +121,61 @@ class App:
             app_button.pack(pady=5, anchor="w")
 
     def download_app(self, app_name, os_name):
-        """Simulate downloading an app based on the OS."""
-        file_extension = ".dmg" if os_name == "macOS" else ".exe"
-        messagebox.showinfo("Download", f"Downloading {app_name} for {os_name} as {app_name}{file_extension}")
+        """Download an app dynamically based on the OS."""
+        # Define the download URLs for each app
+        app_urls = {
+            "Brave Browser": {
+                "macOS": "https://referrals.brave.com/latest/Brave-Browser.dmg",
+                "Windows": "https://referrals.brave.com/latest/Brave-Browser-Setup.exe"
+            },
+            "Discord": {
+                "macOS": "https://discord.com/api/downloads/discord-canary?platform=osx",
+                "Windows": "https://discord.com/api/downloads/discord-canary?platform=win"
+            },
+            "VSCode": {
+                "macOS": "https://code.visualstudio.com/sha/download?build=stable&os=darwin",
+                "Windows": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user"
+            },
+            "PyCharm": {
+                "macOS": "https://download.jetbrains.com/python/pycharm-professional-2023.2.2.dmg",
+                "Windows": "https://download.jetbrains.com/python/pycharm-professional-2023.2.2.exe"
+            },
+            "LibreWolf": {
+                "macOS": "https://gitlab.com/api/v4/projects/24386000/packages/generic/LibreWolf/117.0.1-1/LibreWolf.dmg",
+                "Windows": "https://gitlab.com/api/v4/projects/24386000/packages/generic/LibreWolf/117.0.1-1/LibreWolf_Setup.exe"
+            },
+            "Telegram": {
+                "macOS": "https://osx.telegram.org/updates/Telegram.dmg",
+                "Windows": "https://telegram.org/dl/desktop/win"
+            }
+        }
+
+        # Get the download URL for the selected app and OS
+        if app_name in app_urls:
+            url = app_urls[app_name].get(os_name)
+            if url:
+                try:
+                    # Start the download
+                    response = requests.get(url, stream=True)
+                    response.raise_for_status()  # Raise an error for bad status codes
+
+                    # Determine the file extension
+                    file_extension = ".dmg" if os_name == "macOS" else ".exe"
+                    download_path = os.path.join(os.path.expanduser("~"), "Downloads", f"{app_name}{file_extension}")
+
+                    # Save the file
+                    with open(download_path, "wb") as file:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            file.write(chunk)
+
+                    messagebox.showinfo("Download Complete", f"{app_name} has been downloaded to {download_path}.")
+                except Exception as e:
+                    messagebox.showerror("Download Failed", f"Failed to download {app_name}: {e}")
+            else:
+                messagebox.showerror("Error", f"No download link found for {app_name} on {os_name}.")
+        else:
+            messagebox.showerror("Error", f"{app_name} is not supported for automatic download.")
+
 
 if __name__ == "__main__":
     root = tk.Tk()
