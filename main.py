@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, Frame, Canvas, Scrollbar
 from PIL import Image, ImageTk
-import webbrowser
 import requests
 import os
+import threading
 
 class App:
     def __init__(self, root):
@@ -57,16 +57,16 @@ class App:
         )
         self.mac_button.pack(pady=10)
 
-        # Load windows image
+        # Load Windows image
         try:
-            self.windows_image = Image.open("windows.ico")  # Replace with your macOS icon path
+            self.windows_image = Image.open("windows.ico")  # Replace with your Windows icon path
             self.windows_image = self.windows_image.resize((32, 32), 0)  # Resize the image
             self.windows_photo = ImageTk.PhotoImage(self.windows_image)
         except Exception as e:
-            print(f"Error loading macOS image: {e}")
+            print(f"Error loading Windows image: {e}")
             self.windows_photo = None
 
-        # Add windows button with image
+        # Add Windows button with image
         self.windows_button = ttk.Button(
             self.root,
             text="Windows",
@@ -75,8 +75,6 @@ class App:
             command=lambda: self.show_categories("Windows")
         )
         self.windows_button.pack(pady=10)
-
-
 
     def show_categories(self, os_name):
         """Display categories for the selected OS."""
@@ -117,8 +115,30 @@ class App:
         category_label.pack(pady=10, anchor="w")
 
         for app in apps:
-            app_button = ttk.Button(parent_frame, text=app, command=lambda a=app: self.download_app(a, os_name))
-            app_button.pack(pady=5, anchor="w")
+            # Create a frame for each app
+            app_frame = ttk.Frame(parent_frame)
+            app_frame.pack(pady=5, anchor="w", fill="x")
+
+            # Load app logo
+            try:
+                app_logo = Image.open(f"{app.lower()}.ico")  # Replace with your app logo path
+                app_logo = app_logo.resize((32, 32), 0)
+                app_logo_photo = ImageTk.PhotoImage(app_logo)
+                app_logo_label = ttk.Label(app_frame, image=app_logo_photo)
+                app_logo_label.image = app_logo_photo  # Keep a reference to avoid garbage collection
+                app_logo_label.pack(side="left", padx=5)
+            except Exception as e:
+                print(f"Error loading {app} logo: {e}")
+                app_logo_label = None
+
+            # Add app button
+            app_button = ttk.Button(app_frame, text=app, command=lambda a=app: self.start_download(a, os_name))
+            app_button.pack(side="left", padx=5)
+
+    def start_download(self, app_name, os_name):
+        """Start the download in a separate thread."""
+        download_thread = threading.Thread(target=self.download_app, args=(app_name, os_name))
+        download_thread.start()
 
     def download_app(self, app_name, os_name):
         """Download an app dynamically based on the OS."""
