@@ -40,7 +40,7 @@ class App:
 
         # Load macOS image
         try:
-            self.mac_image = Image.open("mac.ico")  # Replace with your macOS icon path
+            self.mac_image = Image.open("icons/mac.ico")  # Replace with your macOS icon path
             self.mac_image = self.mac_image.resize((32, 32), 0)  # Resize the image
             self.mac_photo = ImageTk.PhotoImage(self.mac_image)
         except Exception as e:
@@ -59,7 +59,7 @@ class App:
 
         # Load Windows image
         try:
-            self.windows_image = Image.open("windows.ico")  # Replace with your Windows icon path
+            self.windows_image = Image.open("icons/windows.ico")  # Replace with your Windows icon path
             self.windows_image = self.windows_image.resize((32, 32), 0)  # Resize the image
             self.windows_photo = ImageTk.PhotoImage(self.windows_image)
         except Exception as e:
@@ -104,10 +104,21 @@ class App:
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
+        # Bind mouse scroll event to the canvas
+        self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
+
         # Add categories
-        self.add_category("Development", os_name, ["VSCode", "PyCharm", "Git"], self.scrollable_frame)
-        self.add_category("Browsers", os_name, ["Brave Browser", "LibreWolf"], self.scrollable_frame)
-        self.add_category("Social", os_name, ["Discord", "Telegram"], self.scrollable_frame)
+        if os_name == "Windows":
+            self.add_category("File Compressors", os_name, ["NanoZip", "WinRAR", "7-Zip"], self.scrollable_frame)
+            self.add_category("Security Apps", os_name, ["Bitwarden", "Windscribe"], self.scrollable_frame)
+            self.add_category("Game Launchers", os_name, ["Steam", "Epic Games", "GOG", "Wargaming Game Center"], self.scrollable_frame)
+            self.add_category("Dev Tools", os_name, ["NetLimiter", "Notepad++", "PuTTY", "PowerToys", "Process Explorer", "Autoruns"], self.scrollable_frame)
+            self.add_category("Social", os_name, ["TeamSpeak"], self.scrollable_frame)
+            self.add_category("BAT Files", os_name, ["Restart Audio Service", "Kill Valorant Process"], self.scrollable_frame)
+        else:
+            self.add_category("Development", os_name, ["VSCode", "PyCharm", "Git"], self.scrollable_frame)
+            self.add_category("Browsers", os_name, ["Brave Browser", "LibreWolf"], self.scrollable_frame)
+            self.add_category("Social", os_name, ["Discord", "Telegram"], self.scrollable_frame)
 
     def add_category(self, category_name, os_name, apps, parent_frame):
         """Add a category with apps."""
@@ -121,18 +132,22 @@ class App:
 
             # Load app logo
             try:
-                app_logo = Image.open(f"{app.lower()}.ico")  # Replace with your app logo path
+                app_logo = Image.open(f"icons/{app.lower()}.ico")  # Replace with your app logo path
                 app_logo = app_logo.resize((32, 32), 0)
                 app_logo_photo = ImageTk.PhotoImage(app_logo)
-                app_logo_label = ttk.Label(app_frame, image=app_logo_photo)
-                app_logo_label.image = app_logo_photo  # Keep a reference to avoid garbage collection
-                app_logo_label.pack(side="left", padx=5)
             except Exception as e:
                 print(f"Error loading {app} logo: {e}")
-                app_logo_label = None
+                app_logo_photo = None
 
-            # Add app button
-            app_button = ttk.Button(app_frame, text=app, command=lambda a=app: self.start_download(a, os_name))
+            # Add app button with logo
+            app_button = ttk.Button(
+                app_frame,
+                text=app,
+                image=app_logo_photo,
+                compound="left",  # Place image to the left of the text
+                command=lambda a=app: self.start_download(a, os_name)
+            )
+            app_button.image = app_logo_photo  # Keep a reference to avoid garbage collection
             app_button.pack(side="left", padx=5)
 
     def start_download(self, app_name, os_name):
@@ -167,6 +182,60 @@ class App:
             "Telegram": {
                 "macOS": "https://osx.telegram.org/updates/Telegram.dmg",
                 "Windows": "https://telegram.org/dl/desktop/win"
+            },
+            "NanoZip": {
+                "Windows": "https://www.nanozip.net/download/nanozip64.exe"
+            },
+            "WinRAR": {
+                "Windows": "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-623.exe"
+            },
+            "7-Zip": {
+                "Windows": "https://www.7-zip.org/a/7z2301-x64.exe"
+            },
+            "Bitwarden": {
+                "Windows": "https://vault.bitwarden.com/download/?app=desktop&platform=windows"
+            },
+            "Windscribe": {
+                "Windows": "https://windscribe.com/install/desktop/Windscribe_2.6.12.exe"
+            },
+            "Steam": {
+                "Windows": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
+            },
+            "Epic Games": {
+                "Windows": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi"
+            },
+            "GOG": {
+                "Windows": "https://www.gog.com/downloader2/galaxy_client_2.0.exe"
+            },
+            "Wargaming Game Center": {
+                "Windows": "https://wgc.wargaming.net/WGC_World_of_Warships_NA.exe"
+            },
+            "NetLimiter": {
+                "Windows": "https://www.netlimiter.com/download/nl5setup.exe"
+            },
+            "Notepad++": {
+                "Windows": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.5.4/npp.8.5.4.Installer.x64.exe"
+            },
+            "PuTTY": {
+                "Windows": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.78-installer.msi"
+            },
+            "PowerToys": {
+                "Windows": "https://github.com/microsoft/PowerToys/releases/download/v0.68.1/PowerToysSetup-0.68.1-x64.exe"
+            },
+            "Process Explorer": {
+                "Windows": "https://download.sysinternals.com/files/ProcessExplorer.zip"
+            },
+            "Autoruns": {
+                "Windows": "https://download.sysinternals.com/files/Autoruns.zip"
+            },
+            "TeamSpeak": {
+                "Windows": "https://files.teamspeak-services.com/releases/client/3.6.1/TeamSpeak3-Client-win64-3.6.1.exe"
+            },
+            "Restart Audio Service": {
+                "Windows": "restart_audio.bat"
+            },
+            "Kill Valorant Process": {
+                "Windows": "kill_valorant.bat"
             }
         }
 
@@ -175,6 +244,12 @@ class App:
             url = app_urls[app_name].get(os_name)
             if url:
                 try:
+                    # Handle BAT files
+                    if app_name in ["Restart Audio Service", "Kill Valorant Process"]:
+                        self.create_bat_file(app_name, url)
+                        messagebox.showinfo("BAT File Created", f"{app_name} BAT file has been created.")
+                        return
+
                     # Start the download
                     response = requests.get(url, stream=True)
                     response.raise_for_status()  # Raise an error for bad status codes
@@ -195,6 +270,23 @@ class App:
                 messagebox.showerror("Error", f"No download link found for {app_name} on {os_name}.")
         else:
             messagebox.showerror("Error", f"{app_name} is not supported for automatic download.")
+
+    def create_bat_file(self, app_name, url):
+        """Create a BAT file for Windows utilities."""
+        bat_content = ""
+        if app_name == "Restart Audio Service":
+            bat_content = 'powershell -Command "Restart-Service -Name \'AudioSrv\' -Force"'
+        elif app_name == "Kill Valorant Process":
+            bat_content = '@echo off\npowershell -Command "Get-Process | Where-Object { $_.Name -eq \'VALORANT-Win64-Shipping\' } | Stop-Process -Force"'
+
+        if bat_content:
+            bat_path = os.path.join(os.path.expanduser("~"), "Downloads", f"{app_name}.bat")
+            with open(bat_path, "w") as bat_file:
+                bat_file.write(bat_content)
+
+    def on_mousewheel(self, event):
+        """Handle mouse wheel scrolling."""
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
 
 if __name__ == "__main__":
